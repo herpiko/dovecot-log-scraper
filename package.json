@@ -1,0 +1,16 @@
+{
+  "name": "dovecot-log-scrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Herpiko Dwi Aguno <herpiko@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "moment": "^2.10.6",
+    "mongoose": "^4.3.3"
+  }
+}
