@@ -8,7 +8,8 @@
 ### How to
 
 - ``npm install``
-- ``node index.js /path/to/file.log  databaseName``
+- ``node index.js /path/to/file.log``
+- The optional env variables are : HOST, DB, USER and PASS. Example : ``HOST=localhost DB=master node index.js /path/to/file.log``
 
 ### Note
 

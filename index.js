@@ -3,14 +3,26 @@ var fs = require("fs");
 var ReadLine = require("readline");
 var moment = require("moment");
 var mongoose = require("mongoose");
-var db = process.argv[3] || "test";
 var path = process.argv[2] || "/var/log/mail.info";
+var db = process.env.DB || "test";
+var host = process.env.HOST || "localhost";
 var exec = require('child_process').exec;
 var prefix = "__webmail__";
 var clientTypes = ["webmail","imap","pop3"];
-
+var opts = {};
+if (process.env.USER) {
+  opts.user = process.env.USER;
+}
+if (process.env.PASS) {
+  opts.pass = process.env.PASS;
+}
 if (mongoose.connection.readyState === 0) {
-  mongoose.connect("mongodb://localhost/" + db);
+  mongoose.connect("mongodb://" + host + "/" + db, opts, function(err){
+    if (err) {
+      console.log(err);
+      process.exit();
+    }
+  });
 }
 mongoose.connection.once("open", function(){
   mongoose.connection.db.collection("users", start);
