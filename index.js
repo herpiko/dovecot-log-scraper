@@ -5,6 +5,7 @@ var moment = require("moment");
 var mongoose = require("mongoose");
 var path = process.argv[2] || "/var/log/mail.info";
 var db = process.env.DB || "test";
+var conf = JSON.parse(fs.readFileSync('./conf.json'));
 var host = process.env.HOST || "localhost";
 var exec = require('child_process').exec;
 var prefix = "__webmail__";
@@ -73,7 +74,7 @@ var start = function(err, Users){
       }
       var accessLog = {};
       var email = "";
-      var splitted = line.split(" pnsmailgw [dovecot]");
+      var splitted = line.split(" " + conf.hostname + " [dovecot]");
       accessLog.lastActivity = new Date(splitted[0]);
       var log = splitted[1];
     
