@@ -11,7 +11,7 @@ mongoose.connection.once('open', function() {
 		if (err) {
       throw err;
 		}
-    for (var i in domains) {
+    for (let i in domains) {
       col.insert(domains[i], function(err, result){
         if (err) {
           throw err;
@@ -21,10 +21,10 @@ mongoose.connection.once('open', function() {
         }
         if (domains.length-1 == i) {
           mongoose.connection.db.collection('users', function(err, userCol){
-		        if (err) {
+            if (err) {
               throw err;
-		        }
-            for (var i in users) {
+            }
+            for (let i in users) {
               users[i].domain = domainId;
               console.log(domainId);
               userCol.insert(users[i], function(err, result){
@@ -36,7 +36,7 @@ mongoose.connection.once('open', function() {
                 }
               })
             }
-	}       );
+          });
         }
       })
     }
