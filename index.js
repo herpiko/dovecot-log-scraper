@@ -12,6 +12,9 @@ const exec = require('child_process').exec;
 const prefix = '__webmail__';
 const clientTypes = ['webmail','imap','pop3'];
 const opts = {};
+let count = 0;
+var totalLines = 0;
+let Users;
 if (process.env.USER) {
   opts.user = process.env.USER;
 }
@@ -30,13 +33,14 @@ mongoose.connection.once('open', function(){
   mongoose.connection.db.collection('users', start);
 });
 
-var prepare = function(cb) {
-  mongoose.connection.db.collection('domains', function(err, Domains){
-    if (err) {
-      console.log(err);
-      process.exit();
-    }
-    Domains.find()
+var prepare = function() {
+  return new Promise(function(resolve, reject){
+    mongoose.connection.db.collection('domains', function(err, Domains){
+      if (err) {
+        console.log(err);
+        process.exit();
+      }
+      Domains.find()
       .toArray(function(err, domains){
         if (err) {
           console.log(err);
@@ -47,21 +51,58 @@ var prepare = function(cb) {
             console.log(err);
             process.exit();
           }
-          total = parseInt(total.split(' ')[0]);
-          cb(domains, total);
+          totalLines = parseInt(total.split(' ')[0]);
+          resolve(domains, total);
         });
       })
+    })
   })
 }
 
-var start = function(err, Users){
+var checkUser = function(query) {
+  return new Promise(function(resolve, reject){
+    Users.findOne(query, function(err, result){
+      if (err) {
+        return reject(err);
+      }
+      if (!result) {
+        return reject(null);
+      }
+      resolve(result);
+    })
+  })
+}
+
+var updateAccessLog = function(query, accessLog) {
+  return new Promise(function(resolve, reject) {
+    Users.findOneAndUpdate(query,
+    { $set : { accessLog : accessLog }}, 
+    {upsert : true }, function(err, result) {
+      if (err) {
+        return reject(err);
+      } 
+      resolve(); 
+    })
+  })
+}
+
+var checkCount = function() {
+  count++;
+  if (count >= totalLines) {
+    console.log('Done!');
+    process.exit();
+  }
+}
+
+var start = function(err,col){
+  Users = col;
   if (err) {
     console.log(err);
     process.exit();
   }
-  prepare(function(domainMap, totalLines){
-    console.log(totalLines);
-    let count = 0;
+  prepare()
+  .then(function(domainMap, totalLines) {
+    totalLines = totalLines;
     let notFound = [];
     let rd = ReadLine.createInterface({
       input : fs.createReadStream(path),
@@ -70,14 +111,7 @@ var start = function(err, Users){
     });
     rd.on('line', function(line){
       if (line.length === 0) {
-        count++;
-        console.log(count);
-        console.log('Empty line');
-        if (count >= totalLines) {
-          console.log('Done!');
-          console.log(notFound);
-          process.exit();
-        }
+        checkCount();
         return;
       }
       let accessLog = {};
@@ -87,13 +121,7 @@ var start = function(err, Users){
       let log = splitted[1];
     
       if (log.indexOf('Login: user=') === -1) {
-        count++;
-        console.log(count);
-        console.log('Not found');
-        if (count >= totalLines) {
-          console.log('Done!');
-          process.exit();
-        }
+        checkCount();
         return;
       }
       log = log.split(',')[0];
@@ -123,65 +151,58 @@ var start = function(err, Users){
       });
       if (!isValidClientType) {
         console.log('Not a valid clientType');
-        console.log(line);
+        checkCount();
         process.exit();
       }
       // Should have a valid date
       if (accessLog.lastActivity.toString() === 'Invalid Date') {
         console.log('Not a valid date value');
         console.log(line);
+        checkCount();
         process.exit();
       }
       let query = {
         username : username,
         domain : domain
       }
-      console.log(query);
       console.log(accessLog);
-      Users.findOne(query, function(err, result){
+      console.log(query);
+
+      checkUser(query)
+      .then(function(result) {
         if (!result) {
           if (notFound.indexOf(username) === -1) {
             notFound.push(username);
           }
-          count++;
-          console.log(count);
           console.log('User not found');
-          if (count >= totalLines) {
-            console.log('Done!');
-            console.log(notFound);
-            process.exit();
-          }
+          checkCount();
           return;
         }
         if (result.accessLog && 
         result.accessLog.lastActivity &&
         result.accessLog.lastActivity > accessLog.lastActivity) {
-          count++;
-          console.log(count);
           console.log('accessLog already exists');
-          if (count >= totalLines) {
-            console.log('Done!');
-            console.log(notFound);
-            process.exit();
-          }
+          checkCount();
           return;
         }
-        Users.findOneAndUpdate(query,
-          { $set : { accessLog : accessLog }}, 
-          {upsert : true }, 
-        function(err, result){
-          if (err) {
-            console.log(err);
-          }
-          count++;
-          console.log(count);
-          if (count >= totalLines) {
-            console.log('Done!');
-            console.log(notFound);
-            process.exit();
-          }
+        updateAccessLog(query, accessLog)
+        .then(function() {
+          console.log('Successfully update accessLog ');
+          checkCount();
+        })
+        .catch(function(err){
+          throw err;
+          process.exit();
         })
       })
+      .catch(function(err){
+        throw err;
+        process.exit();
+      })
     })
+  })
+  .catch(function(err){
+    throw err;
+    process.exit();
   })
 }
