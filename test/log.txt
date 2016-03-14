@@ -1,0 +1,6 @@
+2016-03-06T06:25:45.815923+07:00 hostname [dovecot]	 info	:  imap-login: Login: user=<arst.oien4@domain.com>, method=PLAIN, rip=192.168.1.1, lip=192.168.1.2, mpid=2260, session=<abcdefghij>
+2016-03-06T06:25:48.642693+07:00 hostname [dovecot]	 info	:  imap(arst.ioen5@domain.com): Disconnected for inactivity in=54 out=804
+2016-03-06T06:25:52.062437+07:00 hostname [dovecot]	 info	:  imap-login: Login: user=<arst.oien6@domain.com>, method=PLAIN, rip=192.168.1.1, lip=192.168.1.2, mpid=2275, session=<klmnopqrstu>
+2016-03-06T06:25:52.062437+07:00 hostname [dovecot]	 info	:  imap-login: Login: user=<__webmail__arst.oien4@domain.com>, method=PLAIN, rip=192.168.1.1, lip=192.168.1.2, mpid=2275, session=<klmnopqrstu>
+2016-03-09T23:19:54.836838+07:00 hostname [dovecot]   info :  imap(__webmail__arst.oien1@domain.com): Disconnected: Disconnected in IDLE in=10548 out=57565
+2016-03-11T15:50:53.634439+07:00 hostname [dovecot]   info :  pop3-login: Login: user=<arst.oien1@domain.com>, method=PLAIN, rip=192.168.1.1, lip=192.168.1.2, mpid=7709, session=<pqrstuvwxyz>

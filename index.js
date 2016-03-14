@@ -59,6 +59,7 @@ var start = function(err, Users){
     process.exit();
   }
   prepare(function(domainMap, totalLines){
+    console.log(totalLines);
     var count = 0;
     var notFound = [];
     var rd = ReadLine.createInterface({
@@ -70,6 +71,12 @@ var start = function(err, Users){
       if (line.length === 0) {
         count++;
         console.log(count);
+        console.log('Empty line');
+        if (count >= totalLines) {
+          console.log("Done!");
+          console.log(notFound);
+          process.exit();
+        }
         return;
       }
       var accessLog = {};
@@ -81,6 +88,11 @@ var start = function(err, Users){
       if (log.indexOf("Login: user=") === -1) {
         count++;
         console.log(count);
+        console.log('Not found');
+        if (count >= totalLines) {
+          console.log("Done!");
+          process.exit();
+        }
         return;
       }
       log = log.split(",")[0];
@@ -119,12 +131,12 @@ var start = function(err, Users){
         console.log(line);
         process.exit();
       }
-
-      console.log(accessLog);
       var query = {
         username : username,
         domain : domain
       }
+      console.log(query);
+      console.log(accessLog);
       Users.findOne(query, function(err, result){
         if (!result) {
           if (notFound.indexOf(username) === -1) {
@@ -132,6 +144,12 @@ var start = function(err, Users){
           }
           count++;
           console.log(count);
+          console.log('User not found');
+          if (count >= totalLines) {
+            console.log("Done!");
+            console.log(notFound);
+            process.exit();
+          }
           return;
         }
         if (result.accessLog && 
@@ -139,6 +157,12 @@ var start = function(err, Users){
         result.accessLog.lastActivity > accessLog.lastActivity) {
           count++;
           console.log(count);
+          console.log('accessLog already exists');
+          if (count >= totalLines) {
+            console.log("Done!");
+            console.log(notFound);
+            process.exit();
+          }
           return;
         }
         Users.findOneAndUpdate(query,
@@ -150,7 +174,7 @@ var start = function(err, Users){
           }
           count++;
           console.log(count);
-          if (count === totalLines) {
+          if (count >= totalLines) {
             console.log("Done!");
             console.log(notFound);
             process.exit();
