@@ -1,11 +1,12 @@
-var mongoose = require('mongoose');
-var users = JSON.parse(require('fs').readFileSync(__dirname + '/users.json'));
-var domains = JSON.parse(require('fs').readFileSync(__dirname + '/domains.json'));
+'use strict'
+const mongoose = require('mongoose');
+const users = JSON.parse(require('fs').readFileSync(__dirname + '/users.json'));
+const domains = JSON.parse(require('fs').readFileSync(__dirname + '/domains.json'));
 if (mongoose.connection.readyState === 0) {
   mongoose.connect('mongodb://localhost/test');
 }
-var domainId;
-mongoose.connection.once("open", function() {
+let domainId;
+mongoose.connection.once('open', function() {
   mongoose.connection.db.collection('domains', function(err, col){
 		if (err) {
       throw err;

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mongo test --eval 'db.users.drop();db.domains.drop()' && node test/import.js && DB=test node index.js test/log.txt && ./node_modules/.bin/mocha test/index.js"
+    "test": "mongo test --eval 'db.users.drop();db.domains.drop()' && node --harmony test/import.js && DB=test node --harmony index.js test/log.txt && ./node_modules/.bin/mocha --harmony test/index.js"
   },
   "author": "Herpiko Dwi Aguno <herpiko@gmail.com>",
   "license": "MIT",
