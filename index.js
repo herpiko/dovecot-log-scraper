@@ -67,9 +67,9 @@ var start = function(err, Users){
       terminal : false,
     });
     rd.on("line", function(line){
-      /* console.log(line); */
-      count++;
       if (line.length === 0) {
+        count++;
+        console.log(count);
         return;
       }
       var accessLog = {};
@@ -79,6 +79,8 @@ var start = function(err, Users){
       var log = splitted[1];
     
       if (log.indexOf("Login: user=") === -1) {
+        count++;
+        console.log(count);
         return;
       }
       log = log.split(",")[0];
@@ -128,11 +130,15 @@ var start = function(err, Users){
           if (notFound.indexOf(username) === -1) {
             notFound.push(username);
           }
+          count++;
+          console.log(count);
           return;
         }
         if (result.accessLog && 
         result.accessLog.lastActivity &&
         result.accessLog.lastActivity > accessLog.lastActivity) {
+          count++;
+          console.log(count);
           return;
         }
         Users.findOneAndUpdate(query,
@@ -142,6 +148,8 @@ var start = function(err, Users){
           if (err) {
             console.log(err);
           }
+          count++;
+          console.log(count);
           if (count === totalLines) {
             console.log("Done!");
             console.log(notFound);
