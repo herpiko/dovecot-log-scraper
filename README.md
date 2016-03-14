@@ -1,4 +1,4 @@
-# dovecot-log-scrapper
+# dovecot-log-scraper
 
 ### Requirements
 
@@ -8,6 +8,7 @@
 ### How to
 
 - ``npm install``
+- Edit ``conf.json``, change ``hostname`` value to the dovecot's hostname.
 - ``node index.js /path/to/file.log``
 - The optional env variables are : HOST, DB, USER and PASS. Example : ``HOST=localhost DB=master node index.js /path/to/file.log``
 
@@ -18,3 +19,6 @@
 <pre>
 2015-12-28T17:13:51.289892+07:00 mailgw [dovecot]	 info	:  imap-login: Login: user=<username@somedomain.com>, method=PLAIN, rip=1.1.1.1, lip=1.1.1.2, mpid=5372, session=<y7zAj/In7wAKHwJO>
 </pre>
+
+### Test
+``npm run test``
