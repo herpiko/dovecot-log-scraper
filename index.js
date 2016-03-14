@@ -66,7 +66,7 @@ var checkUser = function(query) {
         return reject(err);
       }
       if (!result) {
-        return reject(null);
+        return resolve(null);
       }
       resolve(result);
     })
@@ -88,6 +88,8 @@ var updateAccessLog = function(query, accessLog) {
 
 var checkCount = function() {
   count++;
+  console.log(count);
+  console.log(totalLines);
   if (count >= totalLines) {
     console.log('Done!');
     process.exit();
@@ -119,7 +121,6 @@ var start = function(err,col){
       let splitted = line.split(' ' + conf.hostname + ' [dovecot]');
       accessLog.lastActivity = new Date(splitted[0]);
       let log = splitted[1];
-    
       if (log.indexOf('Login: user=') === -1) {
         checkCount();
         return;
